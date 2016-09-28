@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mixed',
+    'tblwork',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -56,7 +57,9 @@ ROOT_URLCONF = 'serman.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR + "/templates",
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

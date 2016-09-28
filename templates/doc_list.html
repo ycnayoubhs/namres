@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}Document List{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'mixed/css/index.css' %}" />
+{% endblock %}
+
+{% block content %}
+    {% if required %}
+    <h3 class="error">The document <code>{{ required }}</code> can not be found. Please check the following list.</h3>
+    {% endif %}
+
+    {% if message %}
+    <h3>{{ message }}</h3>
+    {% endif %}
+
+    <h1>Document List</h1>
+
+    <div class="doc-list">
+        <ol>
+            {% for doc in doc_list %}
+            <li>
+                <a href="{% url 'view' doc.slug %}">{{ doc.name }}</a>
+                <span class="pull-right">
+                    <a href="{% url 'view' doc.slug %}">View</a> /
+                    <a href="{% url 'edit' doc.slug %}">Edit</a> /
+                    <a href="{% url 'delete' doc.slug %}">Delete</a>
+                </span>
+            </li>
+            {% endfor %}
+        </ol>
+
+        <a class="create pull-right" href="{% url 'create' %}">New</a>
+    </div>
+{% endblock %}

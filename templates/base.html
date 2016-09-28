@@ -1,0 +1,29 @@
+<html>
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+
+        <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.js"></script>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        {% block js %}{% endblock %}
+        {% block css %}{% endblock %}
+    </head>
+    <body>
+        <header>
+            <div class="wrapper">
+                <h3>Welcome!</h3>
+            </div>
+        </header>
+        <div id="content">
+            <div class="wrapper">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+        {% block js_extra %}{% endblock %}
+    </body>
+</html>
