@@ -8,30 +8,49 @@
 {% endblock %}
 
 {% block content %}
-    {% if required %}
-    <h3 class="error">The document <code>{{ required }}</code> can not be found. Please check the following list.</h3>
-    {% endif %}
+    <div class="doc-list panel panel-default">
+        <div class="panel-heading">Document List</div>
 
-    {% if message %}
-    <h3>{{ message }}</h3>
-    {% endif %}
+        {% if required %}
+        <div class="panel-body">
+        <h3 class="error">The document <code>{{ required }}</code> can not be found. Please check the following list.</h3>
+        </div>
+        {% endif %}
 
-    <h1>Document List</h1>
+        {% if message %}
+        <div class="panel-body">
+        <h3>{{ message }}</h3>
+        </div>
+        {% endif %}
 
-    <div class="doc-list">
-        <ol>
+        <table class="table">
+            <thead>
+            <tr>
+                <th></th>
+                <th>Documents</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
             {% for doc in doc_list %}
-            <li>
-                <a href="{% url 'view' doc.slug %}">{{ doc.name }}</a>
-                <span class="pull-right">
-                    <a href="{% url 'view' doc.slug %}">View</a> /
-                    <a href="{% url 'edit' doc.slug %}">Edit</a> /
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><a href="{% url 'view' doc.slug %}">{{ doc.name }}</a></td>
+                <td>
+                    <a href="{% url 'view' doc.slug %}">View</a>
+                </td>
+                <td>
+                    <a href="{% url 'edit' doc.slug %}">Edit</a>
+                </td>
+                <td>
                     <a href="{% url 'delete' doc.slug %}">Delete</a>
-                </span>
-            </li>
+                </td>
+            </tr>
             {% endfor %}
-        </ol>
-
-        <a class="create pull-right" href="{% url 'create' %}">New</a>
+            <tr><td colspan="100%"><a class="create" href="{% url 'create' %}">+</a></td></tr>
+            </tbody>
+        </table>
     </div>
 {% endblock %}

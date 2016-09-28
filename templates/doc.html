@@ -13,11 +13,14 @@ def cut(value, arg):
     return value.replace(arg, '')
 
 {% block content %}
-    <div class="doc">
-        <a href="{% url 'list' %}">Document List</a> /
-        <a href="{% url 'create' %}">New</a>
-        
-        <h2>{{ title }}</h2>
+    <div class="doc panel panel-default">
+        <ol class="breadcrumb">
+            <li><a href="{% url 'list' %}">Document List</a></li>
+            <li><a href="{% url 'create' %}">+</a></li>
+        </ol>
+
+        <div class="panel-heading">{{ title }}</div>
+        <div class="panel-body">
         {% if paragraphs %}
             {% for p in paragraphs %}
                 <p>{{ p }}</p>
@@ -31,5 +34,6 @@ def cut(value, arg):
                 {% endfor %}
             </ol>
         {% endif %}
+        </div>
     </div>
 {% endblock %}

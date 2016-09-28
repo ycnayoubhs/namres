@@ -1,5 +1,6 @@
 import json
-from urllib.parse import urlencode
+
+from six.moves.urllib.parse import urlencode
 
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
@@ -91,7 +92,10 @@ def document(request, slug):
     server_list = None
     if document.converter == 'S':
         server_list = convert_server_list(doc_context)
-        doc_context = ''
+        if server_list:
+            doc_context = ''
+        else:
+            doc_context = 'Server is under maintenance. Please retry later.'            
 
     content = {
         'title': document.name,
@@ -129,11 +133,14 @@ def convert_server_list(context):
 
 
 def _query_server_info(path):
-    from urllib.parse import urlencode, urljoin
+    from six.moves.urllib.parse import urlencode, urljoin
     from django.conf import settings
     import requests
 
     status_dict = None
+
+    if not hasattr(settings, 'DEPLOY_POLLING_SERVER_LIST'):
+        return {}
 
     for server in settings.DEPLOY_POLLING_SERVER_LIST:
         query_string = urlencode({'folder': path})
