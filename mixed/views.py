@@ -91,11 +91,14 @@ def document(request, slug):
     doc_context = document.context
     server_list = None
     if document.converter == 'S':
-        server_list = convert_server_list(doc_context)
-        if server_list:
-            doc_context = ''
-        else:
-            doc_context = 'Server is under maintenance. Please retry later.'            
+        try:
+            server_list = convert_server_list(doc_context)
+            if server_list:
+                doc_context = ''
+            else:
+                doc_context = 'You have no server list configuration in current document.'
+        except:
+            doc_context = 'There is some thing wrong in your configuration document. Please check and try again.'
 
     content = {
         'title': document.name,
@@ -109,12 +112,21 @@ def document(request, slug):
 def convert_server_list(context):
     converted_list = []
     info_list = _generate_info_list(context)
+
+    server_offline_message = 'Server is under maintenance or you mis-configed.'
     
     for info in info_list:
         path = _get_server_setting(info, 'path')
         status_dict = _query_server_info(path)
 
         if not status_dict:
+            converted_list.append({
+                'title': _get_server_setting(info, 'title'),
+                'url': _get_server_setting(info, 'url'),
+                'db': server_offline_message,
+                'path': path,
+                'deploy': server_offline_message,
+            })
             continue
 
         data_source = status_dict['data_source']
@@ -152,7 +164,7 @@ def _query_server_info(path):
         except:
             pass
     
-    if not status_dict and status_dict[path]['status'] != 'OK':
+    if not status_dict or status_dict[path]['status'] != 'OK':
         return {}
     return status_dict[path]
 
