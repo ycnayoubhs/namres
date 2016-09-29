@@ -33,6 +33,8 @@ def cut(value, arg):
                     </li>
                 {% endfor %}
             </ol>
+        {% elif customized %}
+            {{ customized|safe }}
         {% endif %}
         </div>
     </div>

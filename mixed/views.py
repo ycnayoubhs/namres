@@ -1,14 +1,13 @@
-import json
-
 from six.moves.urllib.parse import urlencode
 
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
-from django.http import JsonResponse
-from django.shortcuts import render, render_to_response, redirect
+from django.shortcuts import render_to_response, redirect
 
-from mixed.models import Document
-from mixed.forms import DocumentForm
+from .models import Document
+from .forms import DocumentForm
+from .server_list_converter import convert_server_list
+from .custom_converter import convert_customizable
 
 def document_edit(request, slug=None):
     if slug == None:
@@ -90,92 +89,18 @@ def document(request, slug):
 
     doc_context = document.context
     server_list = None
+    customized_context = None
+
     if document.converter == 'S':
-        try:
-            server_list = convert_server_list(doc_context)
-            if server_list:
-                doc_context = ''
-            else:
-                doc_context = 'You have no server list configuration in current document.'
-        except:
-            doc_context = 'There is some thing wrong in your configuration document. Please check and try again.'
+        server_list, doc_context = convert_server_list(doc_context)
+    elif document.custom_converter:
+        customized_context, doc_context = convert_customizable(doc_context, document.custom_converter)
 
     content = {
         'title': document.name,
-        'paragraphs': list(filter(lambda x: x.strip() != '', [p for p in doc_context.split('\n')])),
         'server_list': server_list,
+        'customized': customized_context,
+        'paragraphs': [p2 for p2 in [p for p in doc_context.split('\n')] if p2.strip() != ''],
     }
 
     return render_to_response('doc.html', content)
-
-
-def convert_server_list(context):
-    converted_list = []
-    info_list = _generate_info_list(context)
-
-    server_offline_message = 'Server is under maintenance or you mis-configed.'
-    
-    for info in info_list:
-        path = _get_server_setting(info, 'path')
-        status_dict = _query_server_info(path)
-
-        if not status_dict:
-            converted_list.append({
-                'title': _get_server_setting(info, 'title'),
-                'url': _get_server_setting(info, 'url'),
-                'db': server_offline_message,
-                'path': path,
-                'deploy': server_offline_message,
-            })
-            continue
-
-        data_source = status_dict['data_source']
-        if data_source == '.':
-            data_source = '(local)'
-
-        converted_list.append({
-            'title': _get_server_setting(info, 'title'),
-            'url': _get_server_setting(info, 'url'),
-            'db': '%s, %s' % (data_source, status_dict['initial_catalog']),
-            'path': path,
-            'deploy': status_dict['deploy_time'],
-        })
-
-    return converted_list
-
-
-def _query_server_info(path):
-    from six.moves.urllib.parse import urlencode, urljoin
-    from django.conf import settings
-    import requests
-
-    status_dict = None
-
-    if not hasattr(settings, 'DEPLOY_POLLING_SERVER_LIST'):
-        return {}
-
-    for server in settings.DEPLOY_POLLING_SERVER_LIST:
-        query_string = urlencode({'folder': path})
-        url = 'http://%s/RISMOEITWeb/VAT/Modules/Handlers/SvrStat.ashx?%s' % (server, query_string)
-        try:
-            status_dict = json.loads(requests.get(url).text)
-            if status_dict[path]['status'] == 'OK':
-                break
-        except:
-            pass
-    
-    if not status_dict or status_dict[path]['status'] != 'OK':
-        return {}
-    return status_dict[path]
-
-
-def _generate_info_list(context):
-    return [c.split('\r') for c in context.replace('\r\n', '\r').split('\r\r')]
-
-
-def _get_server_setting(info, name):
-    prefix = '%s:' % name
-    line = list(filter(lambda x: x.startswith(prefix), info))
-    if len(line) != 1:
-        return ''
-    return line[0].lstrip(prefix).strip()
