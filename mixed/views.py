@@ -98,6 +98,7 @@ def document(request, slug):
 
     content = {
         'title': document.name,
+        'slug': document.slug,
         'server_list': server_list,
         'customized': customized_context,
         'paragraphs': [p2 for p2 in [p for p in doc_context.split('\n')] if p2.strip() != ''],

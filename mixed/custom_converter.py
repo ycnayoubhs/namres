@@ -12,9 +12,9 @@ def convert_customizable(context, converter):
     try:
         exec(converter.context)
         if converter.output_type == 'F':
-            exec('converted = %s(context)' % output)
+            converted = eval('%s(context)' % output)
         elif converter.output_type == 'S':
-            exec('converted = %s' % output)
+            converted = eval(output)
         else:
             return 'Invalid output type of the converter.', ''
     except Exception as ex:
