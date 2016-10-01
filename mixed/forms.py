@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 from .models import Document
 
@@ -7,4 +8,7 @@ class DocumentForm(forms.ModelForm):
     # context = forms.CharField(widget=forms.Textarea)
     class Meta:
         model = Document
-        exclude = ('slug', 'converter', 'is_deleted')
+        fields = ('name', 'context',)
+        help_texts = {
+            'name': _('Some useful help text.'),
+        }

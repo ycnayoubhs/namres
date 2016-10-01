@@ -15,18 +15,26 @@
 
         <div class="panel-heading">{{ title }}</div>
         <div class="panel-body">
-            <form class="form-horizontal" role="form" action="{% url 'save' %}" method="post">
+            <form class="form-horizontal" role="form" action="" method="post">
             {% csrf_token %}
             <div class="form-group">
                 <label for="firstname" class="col-sm-2 control-label">Name:</label>
                 <div class="col-sm-10">
                 {{ form.name }}
                 </div>
+                <label class="col-sm-2  control-label"></label>
+                <div class="col-sm-10">
+                {{ form.name.errors }}
+                </div>
             </div>
             <div class="form-group">
                 <label for="lastname" class="col-sm-2 control-label">Context:</label>
                 <div class="col-sm-10">
                 {{ form.context }}
+                </div>
+                <label class="col-sm-2  control-label"></label>
+                <div class="col-sm-10">
+                {{ form.context.errors }}
                 </div>
             </div>
             <div class="form-group">

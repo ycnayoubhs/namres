@@ -2,49 +2,68 @@ from six.moves.urllib.parse import urlencode
 
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, get_object_or_404
 
 from .models import Document
 from .forms import DocumentForm
 from .server_list_converter import convert_server_list
 from .custom_converter import convert_customizable
 
+
+def document_create(request):
+    if request.method == 'GET':
+        content = {
+            'form': DocumentForm(),
+            'title': 'Create',
+        }
+        content.update(csrf(request))
+        return render_to_response('doc_editor.html', content)
+
+    elif request.method == 'POST':
+        form = DocumentForm(request.POST)
+
+        if not form.is_valid():
+            content = {
+                'form': form,
+                'title': 'Create',
+            }
+            content.update(csrf(request))
+            return render_to_response('doc_editor.html', content)
+
+        form.save()
+
+        return redirect(reverse('list'))
+
+
 def document_edit(request, slug=None):
-    if slug == None:
-        form = DocumentForm()
-        title = 'Create'
-    else:
+    if request.method == 'GET':
         try:
             document = Document.objects.get(slug=slug, is_deleted=False)
             form = DocumentForm(instance=document)
-            title = document.name
         except Document.DoesNotExist:
-            return redirect(reverse('create'))
+            message = 'Document %s not exists or maybe deleted.' % slug
+            return redirect('%s?%s' % (reverse('list'), urlencode({'message': message})))
 
-    content = {'form': form, 'title': title}
-    content.update(csrf(request))
+        content = {'form': form, 'title': document.name}
+        content.update(csrf(request))
 
-    return render_to_response('doc_editor.html', content)
+        return render_to_response('doc_editor.html', content)
 
+    elif request.method == 'POST':
+        document = get_object_or_404(Document, slug=slug)
+        form = DocumentForm(request.POST, instance=document)
 
-def document_save(request):
-    name = request.POST.get('name') or request.GET.get('name')
-    context = request.POST.get('context') or request.GET.get('context')
+        if not form.is_valid():
+            content = {
+                'form': form,
+                'title': document.name,
+            }
+            content.update(csrf(request))
+            return render_to_response('doc_editor.html', content)
 
-    saved = False
-    try:
-        document = Document.objects.get(name=name)
-        if document.context != context:
-            document.context = context
-            saved = True
-    except Document.DoesNotExist:
-        document = Document(name=name, context=context)
-        saved = True
-    
-    if saved:
-        document.save()
+        form.save()
 
-    return redirect(reverse('list'))
+        return redirect(reverse('list'))
 
 
 def document_delete(request, slug):
@@ -81,7 +100,7 @@ def document_list(request):
     return render_to_response('doc_list.html', content)
 
 
-def document(request, slug):
+def document_view(request, slug):
     try:
         document = Document.objects.get(slug=slug, is_deleted=False)
     except Document.DoesNotExist:
@@ -91,7 +110,9 @@ def document(request, slug):
     server_list = None
     customized_context = None
 
-    if document.converter == 'S':
+    if document.converter == 'N':
+        pass  # normal context, output directly.
+    elif document.converter == 'S':
         server_list, doc_context = convert_server_list(doc_context)
     elif document.custom_converter:
         customized_context, doc_context = convert_customizable(doc_context, document.custom_converter)

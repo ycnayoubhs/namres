@@ -182,3 +182,7 @@ sup {
 .doc textarea {
     height: 200px;
 }
+
+.ds-powered-by {
+    display: none;
+}
