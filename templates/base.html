@@ -1,3 +1,5 @@
+{% load staticfiles %}
+
 <html>
     <head>
         <title>{% block title %}{% endblock %}</title>
@@ -9,6 +11,8 @@
         <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
         <!-- Latest compiled and minified JavaScript -->
         <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="{% static 'mixed/css/index.css' %}" />
 
         {% block js %}{% endblock %}
         {% block css %}{% endblock %}

@@ -3,8 +3,11 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic.base import RedirectView
+from django.contrib.auth.views import login
 
+from mixed.forms import AuthenticationForm
 from tblwork import views as tblwork
+
 
 urlpatterns = [
     url(r'^table/paging/(?P<table_name>[^/]*)/(?P<page_size>[1-9]\d*)/(?P<page_id>[1-9]\d*)/$', tblwork.page),
@@ -13,6 +16,7 @@ urlpatterns = [
     url(r'^table/test/(?P<table_name>[^/]*)/$', tblwork.test_set),
     url(r'^$', RedirectView.as_view(url="/document")),
     url(r'^document/', include('mixed.urls')),
+    url(r'^accounts/login/$', login, {'authentication_form': AuthenticationForm}),
     url(r'^super/', admin.site.urls),
 ]
 

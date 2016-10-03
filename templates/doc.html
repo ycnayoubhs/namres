@@ -1,12 +1,9 @@
 {% extends "base.html" %}
-{% load staticfiles %}
 {% load mixed_filters %}
 
 {% block title %}{{ title }}{% endblock %}
 
-{% block css %}
-    <link rel="stylesheet" type="text/css" href="{% static 'mixed/css/index.css' %}" />
-{% endblock %}
+{% block css %}{% endblock %}
 
 def cut(value, arg):
     """Removes all values of arg from the given string"""

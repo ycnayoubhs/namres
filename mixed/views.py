@@ -2,6 +2,7 @@ from six.moves.urllib.parse import urlencode
 
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 
 from .models import Document
@@ -35,6 +36,7 @@ def document_create(request):
         return redirect(reverse('list'))
 
 
+@login_required
 def document_edit(request, slug=None):
     if request.method == 'GET':
         try:

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="panel panel-primary signin">
+    <div class="panel-heading">Login</div>
+    <div class="panel-body">
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+            {{ error.as_p }}
+            {% endfor %}
+        {% endif %}
+        {{ form.non_field_errors }}
+        <form class="form-signin" action="" method="POST" autocomplete="off">
+            {% csrf_token %}
+            {{ form.username.label_tag }}{{ form.username }}{{ form.username.errors }}
+            {{ form.password.label_tag }}{{ form.password }}{{ form.password.errors }}
+            <div class="form-submit">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+        </form>
+        Back to <a href="{% url 'list' %}">Document List</a>
+    </div>
+</div>
+{% endblock %}

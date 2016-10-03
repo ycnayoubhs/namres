@@ -8,7 +8,7 @@ class CustomConverterAdmin(admin.ModelAdmin):
 
 
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug', 'user', 'is_deleted',)
+    list_display = ('name', 'slug', 'converter', 'custom_converter', 'is_deleted',)
 
     def get_readonly_fields(self, request, obj=None):
         return ('slug',)
