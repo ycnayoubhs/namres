@@ -6,6 +6,7 @@ from django.views.generic.base import RedirectView
 from django.contrib.auth.views import login
 
 from mixed.forms import AuthenticationForm
+from mixed import views as mixed_view
 from tblwork import views as tblwork
 
 
@@ -17,6 +18,7 @@ urlpatterns = [
     url(r'^$', RedirectView.as_view(url="/document")),
     url(r'^document/', include('mixed.urls')),
     url(r'^accounts/login/$', login, {'authentication_form': AuthenticationForm}),
+    url(r'^accounts/register/$', mixed_view.register),
     url(r'^super/', admin.site.urls),
 ]
 

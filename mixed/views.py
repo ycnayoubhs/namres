@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 
 from .models import Document
-from .forms import DocumentForm
+from .forms import DocumentForm, UserCreationForm
 from .server_list_converter import convert_server_list
 from .custom_converter import convert_customizable
 
@@ -128,3 +128,24 @@ def document_view(request, slug):
     }
 
     return render_to_response('doc.html', content)
+
+
+def register(request):
+    if request.method == 'GET':
+        content = {
+            'form': UserCreationForm,
+        }
+        content.update(csrf(request))
+        return render_to_response('registration/register.html', content)
+
+    elif request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if not form.is_valid():
+            content = {
+                'form': form,
+            }
+            content.update(csrf(request))
+            return render_to_response('registration/register.html', content)
+
+        form.save()
+        return redirect(reverse('accounts/login'))

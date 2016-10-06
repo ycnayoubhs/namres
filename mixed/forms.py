@@ -1,5 +1,8 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm as NativeAuthenticationForm
+from django.contrib.auth.forms import (
+    AuthenticationForm as NativeAuthenticationForm,
+    UserCreationForm as NativeUserCreationForm,
+)
 from django.utils.translation import ugettext_lazy as _
 
 from .models import Document
@@ -29,6 +32,26 @@ class AuthenticationForm(NativeAuthenticationForm):
             'placeholder': 'Username',
         })
         self.fields['password'].widget = forms.PasswordInput(attrs={
+            'autocomplete': 'new-password',
+            'class': 'form-control',
+            'placeholder': 'Password',
+        })
+
+
+class UserCreationForm(NativeUserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super(UserCreationForm, self).__init__(*args, **kwargs)
+        self.fields['username'].widget = forms.TextInput(attrs={
+            'autocomplete': 'new-password',
+            'class': 'form-control',
+            'placeholder': 'Username',
+        })
+        self.fields['password1'].widget = forms.PasswordInput(attrs={
+            'autocomplete': 'new-password',
+            'class': 'form-control',
+            'placeholder': 'Password',
+        })
+        self.fields['password2'].widget = forms.PasswordInput(attrs={
             'autocomplete': 'new-password',
             'class': 'form-control',
             'placeholder': 'Password',
