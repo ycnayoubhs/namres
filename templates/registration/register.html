@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
+{% block pageclass %}signup{% endblock %}
+
 {% block content %}
-<div class="panel panel-primary signup">
+<div class="panel panel-primary">
     <div class="panel-heading">Register</div>
     <div class="panel-body">
         {% if form.non_field_errors %}

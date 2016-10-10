@@ -1,0 +1,12 @@
+<header>
+    <div class="container">
+        <div class="pull-left">
+            <h3>Hello, excellent site serves for you.</h3>
+        </div>
+        <div class="pull-right">
+            {% if username %}
+            <div class="user-cta">WELCOME, {{username | upper}}</div>
+            {% endif %}
+        </div>
+    </div>
+</header>

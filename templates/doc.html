@@ -1,16 +1,21 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 {% load mixed_filters %}
 
 {% block title %}{{ title }}{% endblock %}
 
-{% block css %}{% endblock %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'mixed/css/md.css' %}" />
+{% endblock %}
 
 def cut(value, arg):
     """Removes all values of arg from the given string"""
     return value.replace(arg, '')
 
+{% block pageclass %}doc{% endblock %}
+
 {% block content %}
-    <div class="doc panel panel-default">
+    <div class="panel panel-default">
         <ol class="breadcrumb">
             <li><a href="{% url 'list' %}">Document List</a></li>
             <li><a href="{% url 'create' %}">+</a></li>

@@ -1,0 +1,21 @@
+$height: 46px;
+$h3-font-size: 24px;
+$user-cta-font-size: 14px;
+
+header {
+    background: #004084;
+    color: #fff;
+
+    h3 {
+        margin: ($height - $h3-font-size) / 2 - 1 0;  // minus 1 for bootstrap default h3 line-height
+        color: #fff;
+        font-size: $h3-font-size;
+        line-height: $h3-font-size;
+    }
+}
+
+.user-cta {
+    padding: ($height - $user-cta-font-size) / 2;
+    font-size: $user-cta-font-size;
+    line-height: $user-cta-font-size;
+}

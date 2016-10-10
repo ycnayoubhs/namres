@@ -16,6 +16,7 @@ def document_create(request):
         content = {
             'form': DocumentForm(),
             'title': 'Create',
+            'username': request.user.username,
         }
         content.update(csrf(request))
         return render_to_response('doc_editor.html', content)
@@ -27,6 +28,7 @@ def document_create(request):
             content = {
                 'form': form,
                 'title': 'Create',
+                'username': request.user.username,
             }
             content.update(csrf(request))
             return render_to_response('doc_editor.html', content)
@@ -46,7 +48,7 @@ def document_edit(request, slug=None):
             message = 'Document %s not exists or maybe deleted.' % slug
             return redirect('%s?%s' % (reverse('list'), urlencode({'message': message})))
 
-        content = {'form': form, 'title': document.name}
+        content = {'form': form, 'title': document.name, 'username': request.user.username,}
         content.update(csrf(request))
 
         return render_to_response('doc_editor.html', content)
@@ -59,6 +61,7 @@ def document_edit(request, slug=None):
             content = {
                 'form': form,
                 'title': document.name,
+                'username': request.user.username,
             }
             content.update(csrf(request))
             return render_to_response('doc_editor.html', content)
@@ -97,6 +100,7 @@ def document_list(request):
         ],
         'required': request.GET.get('required'),
         'message': request.GET.get('message'),
+        'username': request.user.username,
     }
 
     return render_to_response('doc_list.html', content)
@@ -125,6 +129,7 @@ def document_view(request, slug):
         'server_list': server_list,
         'customized': customized_context,
         'paragraphs': [p2 for p2 in [p for p in doc_context.split('\n')] if p2.strip() != ''],
+        'username': request.user.username,
     }
 
     return render_to_response('doc.html', content)

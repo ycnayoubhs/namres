@@ -4,8 +4,11 @@
 
 {% block css %}{% endblock %}
 
+{% block pageclass %}doc-list{% endblock %}
+
 {% block content %}
-    <div class="doc-list panel panel-default">
+<div class="container">
+    <div class="panel panel-default">
         <div class="panel-heading">Document List</div>
 
         {% if required %}
@@ -50,4 +53,5 @@
             </tbody>
         </table>
     </div>
+</div>
 {% endblock %}
