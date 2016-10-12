@@ -18,4 +18,17 @@ header {
     padding: ($height - $user-cta-font-size) / 2;
     font-size: $user-cta-font-size;
     line-height: $user-cta-font-size;
+    color: #ffeb3b;
+
+    i {
+        font-weight: bold;
+    }
+
+    a {
+        color: #fff;
+
+        &:hover {
+            color: darken(#fff, 10);
+        }
+    }
 }

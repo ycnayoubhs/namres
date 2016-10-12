@@ -1,4 +1,6 @@
+@import 'scaffolding';
 @import 'header';
+@import 'auth';
 
 .wrap {
   width: 1104px;
@@ -64,34 +66,4 @@
 
 .ds-powered-by {
   display: none;
-}
-
-.signin, .signup {
-  padding-top: 100px;
-  margin: 0 auto;
-  width: 375px;
-
-  input:not(:first-child) + label {
-    margin-top: 20px;
-  }
-
-  .errorlist {
-    list-style: none;
-    margin-top: 6px;
-    padding-left: 0;
-    color: #ba2121;
-  }
-
-  .nonfield {
-    padding: 10px 12px;
-    border: 1px solid #ba2121;
-    border-radius: 4px;
-    color: #ba2121;
-    font-weight: 700;
-  }
-
-  .form-submit {
-    margin-top: 10px;
-    text-align: center;
-  }
 }

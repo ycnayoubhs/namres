@@ -21,8 +21,7 @@
                 <button type="submit" class="btn btn-primary">Login</button>
             </div>
         </form>
-        Back to <a href="{% url 'list' %}">Document List</a>
-        Back to <a href="{% url 'list' %}">Document List</a>
+        {% include "registration/links.html" %}
     </div>
 </div>
 {% endblock %}

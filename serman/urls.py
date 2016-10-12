@@ -3,7 +3,7 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic.base import RedirectView
-from django.contrib.auth.views import login
+from django.contrib.auth.views import login, logout_then_login
 
 from mixed.forms import AuthenticationForm
 from mixed import views as mixed_view
@@ -17,8 +17,10 @@ urlpatterns = [
     url(r'^table/test/(?P<table_name>[^/]*)/$', tblwork.test_set),
     url(r'^$', RedirectView.as_view(url="/document")),
     url(r'^document/', include('mixed.urls')),
-    url(r'^accounts/login/$', login, {'authentication_form': AuthenticationForm}),
-    url(r'^accounts/register/$', mixed_view.register),
+    url(r'^accounts/profile/$', RedirectView.as_view(url="/document")),
+    url(r'^accounts/login/$', login, {'authentication_form': AuthenticationForm}, name='login'),
+    url(r'^accounts/logout/$', logout_then_login, name='logout'),
+    url(r'^accounts/register/$', mixed_view.register, name='signin'),
     url(r'^super/', admin.site.urls),
 ]
 

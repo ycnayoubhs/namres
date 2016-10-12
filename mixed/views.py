@@ -2,6 +2,7 @@ from six.moves.urllib.parse import urlencode
 
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 
@@ -153,4 +154,8 @@ def register(request):
             return render_to_response('registration/register.html', content)
 
         form.save()
-        return redirect(reverse('accounts/login'))
+
+        user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password1']) 
+        login(request, user)
+
+        return redirect(reverse('list'))

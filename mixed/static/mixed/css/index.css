@@ -1,3 +1,8 @@
+.breadcrumb-pure {
+  margin: 0;
+  padding: 0;
+  background: transparent; }
+
 header {
   background: #004084;
   color: #fff; }
@@ -10,7 +15,35 @@ header {
 .user-cta {
   padding: 16px;
   font-size: 14px;
-  line-height: 14px; }
+  line-height: 14px;
+  color: #ffeb3b; }
+  .user-cta i {
+    font-weight: bold; }
+  .user-cta a {
+    color: #fff; }
+    .user-cta a:hover {
+      color: #e6e6e6; }
+
+.signin, .signup {
+  padding-top: 100px;
+  margin: 0 auto;
+  width: 375px; }
+  .signin input:not(:first-child) + label, .signup input:not(:first-child) + label {
+    margin-top: 20px; }
+  .signin .errorlist, .signup .errorlist {
+    list-style: none;
+    margin-top: 6px;
+    padding-left: 0;
+    color: #ba2121; }
+  .signin .nonfield, .signup .nonfield {
+    padding: 10px 12px;
+    border: 1px solid #ba2121;
+    border-radius: 4px;
+    color: #ba2121;
+    font-weight: 700; }
+  .signin .form-submit, .signup .form-submit {
+    margin-top: 10px;
+    text-align: center; }
 
 .wrap {
   width: 1104px;
@@ -57,24 +90,3 @@ header {
 
 .ds-powered-by {
   display: none; }
-
-.signin, .signup {
-  padding-top: 100px;
-  margin: 0 auto;
-  width: 375px; }
-  .signin input:not(:first-child) + label, .signup input:not(:first-child) + label {
-    margin-top: 20px; }
-  .signin .errorlist, .signup .errorlist {
-    list-style: none;
-    margin-top: 6px;
-    padding-left: 0;
-    color: #ba2121; }
-  .signin .nonfield, .signup .nonfield {
-    padding: 10px 12px;
-    border: 1px solid #ba2121;
-    border-radius: 4px;
-    color: #ba2121;
-    font-weight: 700; }
-  .signin .form-submit, .signup .form-submit {
-    margin-top: 10px;
-    text-align: center; }
