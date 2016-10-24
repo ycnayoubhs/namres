@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+from uuid import uuid1
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.template.defaultfilters import slugify
@@ -64,4 +66,6 @@ class Document(SMModel):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
+        if self.slug == '':
+            self.slug = uuid1()
         super(Document, self).save(*args, **kwargs) # Call the real save() method
