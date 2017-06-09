@@ -25,7 +25,7 @@ SECRET_KEY = 'jnw%0e8@u8ick5o(i7p2u&)0k3*u&p+0s*u2ts06j543jr&hb1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -126,7 +126,7 @@ STATIC_URL = '/public/'
 STATIC_ROOT = os.path.join(BASE_DIR, "public")
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static/bundle"),
+    
 )
 
 DATABASE_AUTH_LIST = {
@@ -142,5 +142,10 @@ PICKLE_CACHE_DIR = 'D:/_pickle'
 
 try:
     from .rismo import *
+except:
+    pass
+
+try:
+    from .private import *
 except:
     pass

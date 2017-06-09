@@ -24,6 +24,11 @@ urlpatterns = [
     url(r'^super/', admin.site.urls),
 ]
 
+urlpatterns += [
+    url(r'^manmail/set/$', mixed_view.set_manmail_account),
+    url(r'manmail/send/(?P<m_type>[a-z]{3,10})/(?P<period>[\d|.]*)/$', mixed_view.send_manmail)
+]
+
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

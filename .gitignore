@@ -6,3 +6,5 @@
 .vscode/
 
 .sass-cache/
+
+public/*

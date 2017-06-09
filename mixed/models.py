@@ -69,3 +69,11 @@ class Document(SMModel):
         if self.slug == '':
             self.slug = uuid1()
         super(Document, self).save(*args, **kwargs) # Call the real save() method
+
+
+class EmailAccount(SMModel):
+    email = models.EmailField()
+    password = models.CharField(max_length=100)
+    smtp_server = models.CharField(max_length=100, blank=True, null=True)
+
+    user = models.OneToOneField(User, related_name='manmail')

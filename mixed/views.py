@@ -1,12 +1,24 @@
+# encoding: utf-8
+
+from datetime import datetime
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from smtplib import SMTP
+
 from six.moves.urllib.parse import urlencode
 
+from django.conf import settings
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.http.response import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response, redirect, get_object_or_404
+from django.utils.translation import ugettext as _
 
-from .models import Document
+from markdown2 import markdown
+
+from .models import Document, EmailAccount
 from .forms import DocumentForm, UserCreationForm
 from .server_list_converter import convert_server_list
 from .custom_converter import convert_customizable
@@ -48,7 +60,7 @@ def doc_owner_required(function):
         except Document.DoesNotExist:
             message = 'Document %s not exists or maybe deleted.' % slug
             return redirect('%s?%s' % (reverse('list'), urlencode({'message': message})))
-        
+
         if document.user and request.user.id != document.user.id:
             message = 'You have no authority to do this action to <%s>.' % document.name
             return redirect('%s?%s' % (reverse('list'), urlencode({'message': message.encode('utf-8')})))
@@ -173,7 +185,103 @@ def register(request):
 
         form.save()
 
-        user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password1']) 
+        user = authenticate(
+            username=form.cleaned_data['username'],
+            password=form.cleaned_data['password1'])
         login(request, user)
 
         return redirect(reverse('list'))
+
+
+SUBJECT, TEXT = 0, 1
+MAIL_LIST = {
+    'overtime': [
+        _('[overtime] %(name)s %(date)s for %(period)s hour(s)'),
+        _(''),
+    ],
+    'dayoff': [
+        _('[dayoff] %(name)s %(date)s for %(period)s hour(s)'),
+        _(''),
+    ],
+}
+
+
+MANAGER_ADDRESS = getattr(settings, 'MANAGER_ADDRESS', '')
+PUBLIC_MANMAIL_ACCOUNT = getattr(settings, 'PUBLIC_MANMAIL_ACCOUNT', None)
+@login_required
+def send_manmail(request, m_type, period):
+    user = request.user
+
+    if hasattr(user, 'manmail'):
+        m_account = user.manmail
+    elif PUBLIC_MANMAIL_ACCOUNT:
+        m_account = PUBLIC_MANMAIL_ACCOUNT
+    else:
+        return HttpResponseBadRequest('Please config your email account first.')
+
+    if user.first_name or user.last_name:
+        username = user.first_name + user.last_name
+    else:
+        username = user.username
+
+    subject_dt = request.GET.get('date', datetime.now())
+    if isinstance(subject_dt, datetime):
+        subject_dt = subject_dt.strftime('%Y%m%d')
+    else:
+        try:
+            datetime.strptime(subject_dt, '%Y%m%d')
+        except ValueError:
+            return HttpResponseBadRequest('Invalid date format of, should be `yyyymmdd`.')
+
+    mail_template = MAIL_LIST[m_type]
+
+    message = MIMEMultipart()
+    message['Subject'] = mail_template[SUBJECT] % {
+        'name': username,
+        'date': subject_dt,
+        'period': period,
+    }
+    message['From'] = m_account.email
+    message['To'] = MANAGER_ADDRESS
+
+    context = MIMEText(markdown(mail_template[TEXT]), _subtype='html', _charset='utf-8')
+    message.attach(context)
+
+    try:
+        smtp = SMTP(m_account.smtp_server)
+        smtp.login(m_account.email, m_account.password)
+        smtp.sendmail(m_account.email, MANAGER_ADDRESS, message.as_string())
+    except Exception as ex:
+        print ex.message
+        HttpResponseBadRequest(
+            'Send mail failed, please retry again if you donot wanna to give up.')
+    finally:
+        smtp.close()
+
+    return HttpResponse('send mail successed!')
+
+
+DEFAULT_SMTP_SERVER = getattr(settings, 'DEFAULT_SMTP_SERVER', 'smtp.163.com')
+@login_required
+def set_manmail_account(request):
+    email = request.GET.get('email')
+    password = request.GET.get('psw')
+    smtp_server = request.GET.get('smtp', DEFAULT_SMTP_SERVER)
+    if not (email and password):
+        return HttpResponseBadRequest('Lack of email or password information.')
+
+    user = request.user
+
+    if not hasattr(user, 'manmail'):
+        m_account = EmailAccount(
+            email=email,
+            password=password,
+            smtp_server=smtp_server,
+            user=request.user)
+    else:
+        m_account = user.manmail
+        m_account.email = email
+        m_account.password = password
+        m_account.smtp_server = smtp_server
+    m_account.save()
+    return HttpResponse('set email account succeed!')
