@@ -1,0 +1,41 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#: .\mixed\views.py:200 .\mixed\views.py:204
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-06-09 18:08+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\mixed\forms.py:15
+msgid "Some useful help text."
+msgstr ""
+
+#: .\mixed\models.py:49
+msgid "System Converter, has a higher priority than Custom Converter."
+msgstr ""
+
+#: .\mixed\models.py:55
+msgid "Custom converter, works while the System Converter left empty."
+msgstr ""
+
+#: .\mixed\views.py:199
+#, python-format
+msgid "[overtime] %(name)s %(date)s for %(period)s hour(s)"
+msgstr "[加班申请] %(name)s %(date)s 加班%(period)s小时"
+
+#: .\mixed\views.py:203
+#, python-format
+msgid "[dayoff] %(name)s %(date)s for %(period)s hour(s)"
+msgstr "[请假申请] %(name)s %(date)s 请假%(period)s小时"
