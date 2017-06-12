@@ -3,6 +3,7 @@
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import formatdate
 from smtplib import SMTP
 
 from six.moves.urllib.parse import urlencode
@@ -285,6 +286,7 @@ def send_manmail(request):
     }
     message['From'] = m_sender
     message['To'] = MANAGER_ADDRESS
+    message['Date'] = formatdate(localtime=True)
 
     m_context = request.POST.get('m_context', mail_template[TEXT])
     context = MIMEText(markdown(m_context), _subtype='html', _charset='utf-8')
