@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <div class="container" style="padding-top: 30px;">
+        <form action="" method="POST">
+            <label for="" class="title">{% trans 'Period' %}</label>
+            <div>
+                <input type="text" name="m_period" class="form-control" style="width: 90px;" />
+            </div>
+            <label for="m_type" class="title">{% trans 'Mail Type' %}</label>
+            <div id="m_type">
+                <input type="radio" name="m_type" value="overtime" id="overtime" />
+                <label for="overtime">{% trans 'Overtime' %}</label>
+                <input type="radio" name="m_type" value="dayoff" id="dayoff" />
+                <label for="dayoff">{% trans 'Dayoff' %}</label>
+                <input type="radio" name="m_type" value="outwork" id="outwork" />
+                <label for="outwork">{% trans 'Outwork' %}</label>
+            </div>
+            <label for="m_content" class="title">{% trans 'Mail content' %}</label>
+            <div>
+                <textarea name="m_context" id="" cols="30" rows="10" class="form-control" 
+                    style="max-width: 450px; height: 100px;" placeholder="{% trans 'Nullable' %}"></textarea>
+            </div>
+
+            <label for="" class="title">{% trans 'Apply Date' %}</label>
+            <div>
+                <input type="text" name="m_date" class="form-control"
+                    style="width: 450px;" placeholder="{% trans 'Leave empty to set as today' %}">
+            </div>
+
+            <div style="margin-top: 20px;">
+                <input type="submit" value="{% trans 'Send' %}" class="btn btn-success" style="width: 90px;" />
+                {% if message %}
+                <div style="color: red;">
+                    {{ message }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="spliter"></div>
+
+            <label for="" class="title">{% trans 'Sender' %}</label>
+            <div>
+                <input type="text" name="m_sender" class="form-control" style="width: 450px;" value="{{ m_from }}">
+                <input type="checkbox" name="save_sender" id="save_sender">
+                <label for="save_sender">{% trans 'Save as default' %}</label>
+            </div>
+
+            <label for="" class="title">{% trans 'Receiver' %}</label>
+            <div>
+                <span>{{ receiver }}</span>
+            </div>
+        </form>
+    </div>
+{% endblock content %}
+
+{% block css %}
+<style>
+    form {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    input[type="radio"]:not(:first-child) {
+        margin-left: 10px;
+    }
+    .title {
+        margin-top: 10px;
+    }
+    .title + div {
+        padding-left: 10px;
+    }
+    .spliter {
+        margin: 20px 0 20px 0;
+        border-bottom: 1px solid #ccc;
+        width: 65%;
+    }
+</style>
+{% endblock %}

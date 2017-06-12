@@ -26,7 +26,8 @@ urlpatterns = [
 
 urlpatterns += [
     url(r'^manmail/set/$', mixed_view.set_manmail_account),
-    url(r'manmail/send/(?P<m_type>[a-z]{3,10})/(?P<period>[\d|.]*)/$', mixed_view.send_manmail)
+    url(r'^manmail/send/(?P<m_type>[a-z]{3,10})/(?P<period>[\d|.]*)/$', mixed_view.send_manmail),
+    url(r'^manmail/send/$', mixed_view.send_manmail, name='manmail'),
 ]
 
 if settings.DEBUG:

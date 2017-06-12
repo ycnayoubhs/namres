@@ -73,7 +73,7 @@ class Document(SMModel):
 
 class EmailAccount(SMModel):
     email = models.EmailField()
-    password = models.CharField(max_length=100)
+    password = models.CharField(max_length=100, blank=True, null=True)
     smtp_server = models.CharField(max_length=100, blank=True, null=True)
 
     user = models.OneToOneField(User, related_name='manmail')
