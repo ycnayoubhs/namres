@@ -15,6 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.http.response import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import csrf_exempt
 
 from markdown2 import markdown
 
@@ -203,35 +204,76 @@ MAIL_LIST = {
         _('[dayoff] %(name)s %(date)s for %(period)s hour(s)'),
         _(''),
     ],
+    'outwork': [
+        _('[outwork] %(name)s %(date)s for %(period)s hour(s)'),
+        _(''),
+    ],
 }
 
 
 MANAGER_ADDRESS = getattr(settings, 'MANAGER_ADDRESS', '')
 PUBLIC_MANMAIL_ACCOUNT = getattr(settings, 'PUBLIC_MANMAIL_ACCOUNT', None)
+@csrf_exempt
 @login_required
-def send_manmail(request, m_type, period):
+def send_manmail(request):
     user = request.user
 
-    if hasattr(user, 'manmail'):
-        m_account = user.manmail
-    elif PUBLIC_MANMAIL_ACCOUNT:
-        m_account = PUBLIC_MANMAIL_ACCOUNT
-    else:
-        return HttpResponseBadRequest('Please config your email account first.')
+    m_from = user.manmail.email if hasattr(user, 'manmail') else ''
 
-    if user.first_name or user.last_name:
-        username = user.first_name + user.last_name
-    else:
-        username = user.username
+    context = {
+        'receiver': MANAGER_ADDRESS,
+        'm_from': m_from,
+        'username': user.username,
+    }
 
-    subject_dt = request.GET.get('date', datetime.now())
+    if request.method == 'GET':
+        return render_to_response('manmail.html', context=context)
+
+    m_type = request.POST.get('m_type')
+    m_period = request.POST.get('m_period')
+    messages = []
+    if m_type not in MAIL_LIST:
+        messages.append(_('Invalid mail type.'))
+    try:
+        v_period = float(m_period)
+        if m_type == 'overtime' and int(v_period * 10) % 5 != 0:
+            messages.append(_('Invalid period. The minimize unit is half an hour.'))
+    except:
+        messages.append(_('Invalid period.'))
+    if messages:
+        context.update({'message': ' '.join(messages)})
+        return render_to_response('manmail.html', context=context)
+
+    subject_dt = request.POST.get('m_date', datetime.now())
+    if not subject_dt:
+        subject_dt = datetime.now()
     if isinstance(subject_dt, datetime):
         subject_dt = subject_dt.strftime('%Y%m%d')
     else:
         try:
             datetime.strptime(subject_dt, '%Y%m%d')
         except ValueError:
-            return HttpResponseBadRequest('Invalid date format of, should be `yyyymmdd`.')
+            context.update({'message': _('Invalid date format, should in format `yyyymmdd`.')})
+            return render_to_response('manmail.html', context=context)
+
+    m_sender = request.POST.get('m_sender')
+    save_sender = request.POST.get('save_sender')
+    if not m_sender:
+        m_sender = m_from
+    if m_from == '' and not m_sender:
+        context.update({'message': _('Please input your sender mail address.')})
+        return render_to_response('manmail.html', context=context)
+    m_account, is_created = EmailAccount.objects.get_or_create(user=user)
+    if is_created or (m_account.email != m_sender and save_sender):
+        m_account.email = m_sender
+        m_account.save()
+    if not m_account.password:
+        m_account = PUBLIC_MANMAIL_ACCOUNT
+
+    if user.first_name or user.last_name:
+        username = user.first_name + user.last_name
+    else:
+        username = user.username
 
     mail_template = MAIL_LIST[m_type]
 
@@ -239,12 +281,13 @@ def send_manmail(request, m_type, period):
     message['Subject'] = mail_template[SUBJECT] % {
         'name': username,
         'date': subject_dt,
-        'period': period,
+        'period': m_period,
     }
-    message['From'] = m_account.email
+    message['From'] = m_sender
     message['To'] = MANAGER_ADDRESS
 
-    context = MIMEText(markdown(mail_template[TEXT]), _subtype='html', _charset='utf-8')
+    m_context = request.POST.get('m_context', mail_template[TEXT])
+    context = MIMEText(markdown(m_context), _subtype='html', _charset='utf-8')
     message.attach(context)
 
     try:
@@ -258,7 +301,8 @@ def send_manmail(request, m_type, period):
     finally:
         smtp.close()
 
-    return HttpResponse('send mail successed!')
+    # return HttpResponse('send mail successed!')
+    return render_to_response('manmail_ok.html')
 
 
 DEFAULT_SMTP_SERVER = getattr(settings, 'DEFAULT_SMTP_SERVER', 'smtp.163.com')
@@ -285,3 +329,7 @@ def set_manmail_account(request):
         m_account.smtp_server = smtp_server
     m_account.save()
     return HttpResponse('set email account succeed!')
+
+
+def set_manmail_page(request):
+    return render_to_response('manmail.html')
