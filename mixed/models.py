@@ -75,5 +75,16 @@ class EmailAccount(SMModel):
     email = models.EmailField()
     password = models.CharField(max_length=100, blank=True, null=True)
     smtp_server = models.CharField(max_length=100, blank=True, null=True)
+    sign = models.CharField(max_length=500, blank=True, null=True)
 
     user = models.OneToOneField(User, related_name='manmail')
+
+    def __init__(self, *args, **kwargs):
+        super(EmailAccount, self).__init__(*args, **kwargs)
+        self._email = self.email
+        self._sign = self.sign
+
+    def save(self, *args, **kwargs):
+        if self._email == self.email and self._sign == self.sign:
+            return
+        super(EmailAccount, self).save(*args, **kwargs)

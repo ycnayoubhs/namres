@@ -10,6 +10,7 @@
                 <ol class="breadcrumb breadcrumb-pure">
                 {% if username %}
                     <li><span>WELCOME, <i>{{username}}</i></span></li>
+                    <li><a href="/">{% trans 'Documents' %}</a></li>
                     <li><a href="{% url 'manmail' %}">{% trans 'ManMail' %}</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>
                 {% else %}

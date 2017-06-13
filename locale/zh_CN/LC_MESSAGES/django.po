@@ -3,13 +3,12 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#: .\mixed\views.py:201 .\mixed\views.py:205 .\mixed\views.py:209
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-12 17:37+0800\n"
+"POT-Creation-Date: 2017-06-13 10:25+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,44 +29,52 @@ msgstr ""
 msgid "Custom converter, works while the System Converter left empty."
 msgstr ""
 
-#: .\mixed\views.py:200
+#: .\mixed\views.py:201
 #, python-format
 msgid "[overtime] %(name)s %(date)s for %(period)s hour(s)"
 msgstr "[加班申请] %(name)s %(date)s 加班%(period)s小时"
 
-#: .\mixed\views.py:204
+#: .\mixed\views.py:205
 #, python-format
 msgid "[dayoff] %(name)s %(date)s for %(period)s hour(s)"
 msgstr "[请假申请] %(name)s %(date)s 请假%(period)s小时"
 
-#: .\mixed\views.py:208
+#: .\mixed\views.py:209
 #, python-format
 msgid "[outwork] %(name)s %(date)s for %(period)s hour(s)"
 msgstr "[外勤申请] %(name)s %(date)s 外勤%(period)s小时"
 
-#: .\mixed\views.py:236
+#: .\mixed\views.py:260
 msgid "Invalid mail type."
 msgstr "无效的邮件类型。"
 
-#: .\mixed\views.py:240
-msgid "Invalid period. The minimize unit is half an hour."
-msgstr "无效的时长。最小单位为半小时。"
+#: .\mixed\views.py:264
+msgid "Invalid period, The minimize unit is half an hour."
+msgstr "无效的时长，最小单位为半小时。"
 
-#: .\mixed\views.py:242
+#: .\mixed\views.py:266
 msgid "Invalid period."
 msgstr "无效的时长。"
 
-#: .\mixed\views.py:256
+#: .\mixed\views.py:276
 msgid "Invalid date format, should in format `yyyymmdd`."
 msgstr "无效的日期格式，请以`20170131`的格式输入。"
 
-#: .\mixed\views.py:264
+#: .\mixed\views.py:284
 msgid "Please input your sender mail address."
-msgstr "请出入发件人地址。"
+msgstr "请输入发件人地址。"
+
+#: .\mixed\views.py:286
+msgid "Please input your name."
+msgstr "请输入您的姓名。"
 
 #: .\templates\header.html:13
-msgid "ManMail"
+msgid "Documents"
 msgstr ""
+
+#: .\templates\header.html:14
+msgid "ManMail"
+msgstr "勤务邮件发送"
 
 #: .\templates\manmail.html:8
 msgid "Period"
@@ -93,30 +100,53 @@ msgstr "外勤"
 msgid "Mail content"
 msgstr "邮件正文"
 
-#: .\templates\manmail.html:24
+#: .\templates\manmail.html:24 .\templates\manmail.html:62
 msgid "Nullable"
 msgstr "可空"
 
-#: .\templates\manmail.html:27
+#: .\templates\manmail.html:26
+msgid "Browse Project Code"
+msgstr "查看项目编号"
+
+#: .\templates\manmail.html:30
 msgid "Apply Date"
 msgstr "申请日期"
 
-#: .\templates\manmail.html:30
+#: .\templates\manmail.html:33
 msgid "Leave empty to set as today"
 msgstr "留空则为当日"
 
-#: .\templates\manmail.html:34
+#: .\templates\manmail.html:37
 msgid "Send"
 msgstr "发送"
 
-#: .\templates\manmail.html:44
+#: .\templates\manmail.html:45
+msgid "Basic Settings"
+msgstr "基础设置"
+
+#: .\templates\manmail.html:47
+msgid "Receiver"
+msgstr "收件人"
+
+#: .\templates\manmail.html:54
 msgid "Sender"
 msgstr "发件人"
 
-#: .\templates\manmail.html:48
-msgid "Save as default"
-msgstr "设为常用"
+#: .\templates\manmail.html:59
+msgid "Mail Sign"
+msgstr "邮件签名"
 
-#: .\templates\manmail.html:51
-msgid "Receiver"
-msgstr "收件人"
+#: .\templates\manmail.html:66
+msgid "Name"
+msgstr "姓名"
+
+#: .\templates\manmail_ok.html:7
+msgid "Send successfully!"
+msgstr "已、成功发送！"
+
+#: .\templates\manmail_ok.html:8
+msgid "Back"
+msgstr "返回"
+
+#~ msgid "Save as default"
+#~ msgstr "设为常用"

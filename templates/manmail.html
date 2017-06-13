@@ -7,7 +7,7 @@
         <form action="" method="POST">
             <label for="" class="title">{% trans 'Period' %}</label>
             <div>
-                <input type="text" name="m_period" class="form-control" style="width: 90px;" />
+                <input type="text" name="m_period" class="form-control" style="width: 90px;" value="{{ m_period }}" />
             </div>
             <label for="m_type" class="title">{% trans 'Mail Type' %}</label>
             <div id="m_type">
@@ -21,7 +21,10 @@
             <label for="m_content" class="title">{% trans 'Mail content' %}</label>
             <div>
                 <textarea name="m_context" id="" cols="30" rows="10" class="form-control" 
-                    style="max-width: 450px; height: 100px;" placeholder="{% trans 'Nullable' %}"></textarea>
+                    style="max-width: 450px; height: 100px;" placeholder="{% trans 'Nullable' %}">{{ m_content }}</textarea>
+                <a href="/document/-code/" target="_blanket" style="margin-top: 5px; display: inline-block;">
+                    {% trans 'Browse Project Code' %}
+                </a>
             </div>
 
             <label for="" class="title">{% trans 'Apply Date' %}</label>
@@ -33,24 +36,38 @@
             <div style="margin-top: 20px;">
                 <input type="submit" value="{% trans 'Send' %}" class="btn btn-success" style="width: 90px;" />
                 {% if message %}
-                <div style="color: red;">
+                <div class="err" style="color: red;">
                     {{ message }}
                 </div>
                 {% endif %}
             </div>
 
-            <div class="spliter"></div>
-
-            <label for="" class="title">{% trans 'Sender' %}</label>
-            <div>
-                <input type="text" name="m_sender" class="form-control" style="width: 450px;" value="{{ m_from }}">
-                <input type="checkbox" name="save_sender" id="save_sender">
-                <label for="save_sender">{% trans 'Save as default' %}</label>
-            </div>
+            <div class="spliter"><h4>{% trans 'Basic Settings' %}</h4></div>
 
             <label for="" class="title">{% trans 'Receiver' %}</label>
             <div>
-                <span>{{ receiver }}</span>
+                <span>{{ m_receiver }}</span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="" class="title">{% trans 'Sender' %}</label>
+                    <div>
+                        <input type="text" name="m_sender" class="form-control" style="width: 450px;" value="{{ m_sender }}">
+                    </div>
+
+                    <label for="" class="title">{% trans 'Mail Sign' %}</label>
+                    <div>
+                        <textarea name="m_sign" id="" cols="30" rows="10" class="form-control" 
+                            style="width: 720px; max-width: 720px; height: 100px;" placeholder="{% trans 'Nullable' %}">{{ m_sign }}</textarea>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="" class="title">{% trans 'Name' %}</label>
+                    <div>
+                        <input type="text" name="m_name" class="form-control" style="width: 150px;" value="{{ m_name }}">
+                    </div>
+                </div>
             </div>
         </form>
     </div>
@@ -63,8 +80,16 @@
         border: 1px solid #ccc;
         border-radius: 5px;
     }
+    #m_type input, #m_type label {
+        cursor: pointer;
+    }
+    #m_type label {
+        margin-left: -5px;
+        padding-left: 8px;
+        padding-right: 10px;
+    }
     input[type="radio"]:not(:first-child) {
-        margin-left: 10px;
+        margin-left: 15px;
     }
     .title {
         margin-top: 10px;
@@ -73,9 +98,12 @@
         padding-left: 10px;
     }
     .spliter {
-        margin: 20px 0 20px 0;
+        margin: 40px 0 20px 0;
         border-bottom: 1px solid #ccc;
         width: 65%;
+    }
+    .err {
+        margin-top: 5px;
     }
 </style>
 {% endblock %}

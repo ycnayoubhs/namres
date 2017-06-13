@@ -199,15 +199,15 @@ SUBJECT, TEXT = 0, 1
 MAIL_LIST = {
     'overtime': [
         _('[overtime] %(name)s %(date)s for %(period)s hour(s)'),
-        _(''),
+        '',
     ],
     'dayoff': [
         _('[dayoff] %(name)s %(date)s for %(period)s hour(s)'),
-        _(''),
+        '',
     ],
     'outwork': [
         _('[outwork] %(name)s %(date)s for %(period)s hour(s)'),
-        _(''),
+        '',
     ],
 }
 
@@ -219,33 +219,53 @@ PUBLIC_MANMAIL_ACCOUNT = getattr(settings, 'PUBLIC_MANMAIL_ACCOUNT', None)
 def send_manmail(request):
     user = request.user
 
-    m_from = user.manmail.email if hasattr(user, 'manmail') else ''
-
     context = {
-        'receiver': MANAGER_ADDRESS,
-        'm_from': m_from,
         'username': user.username,
     }
 
     if request.method == 'GET':
+        if hasattr(user, 'manmail'):
+            m_sender = user.manmail.email
+            m_sign = user.manmail.sign
+        else:
+            m_sender = ''
+            m_sign = ''
+
+        context.update({
+            'm_receiver': MANAGER_ADDRESS,
+            'm_sender': m_sender,
+            'm_name': user.first_name + user.last_name,
+            'm_sign': m_sign,
+        })
+
         return render_to_response('manmail.html', context=context)
 
     m_type = request.POST.get('m_type')
     m_period = request.POST.get('m_period')
+    subject_dt = request.POST.get('m_date', datetime.now())
+    m_sender = request.POST.get('m_sender', '').strip()
+    m_name = request.POST.get('m_name', '').strip()
+    m_sign = request.POST.get('m_sign')
+
+    context.update({
+        'm_receiver': MANAGER_ADDRESS,
+        'm_period': m_period,
+        'm_sender': m_sender,
+        'm_name': user.first_name + user.last_name,
+        'm_sign': m_sign,
+        'm_content': request.POST.get('m_context', ''),
+    })
+
     messages = []
     if m_type not in MAIL_LIST:
         messages.append(_('Invalid mail type.'))
     try:
         v_period = float(m_period)
         if m_type == 'overtime' and int(v_period * 10) % 5 != 0:
-            messages.append(_('Invalid period. The minimize unit is half an hour.'))
+            messages.append(_('Invalid period, The minimize unit is half an hour.'))
     except:
         messages.append(_('Invalid period.'))
-    if messages:
-        context.update({'message': ' '.join(messages)})
-        return render_to_response('manmail.html', context=context)
 
-    subject_dt = request.POST.get('m_date', datetime.now())
     if not subject_dt:
         subject_dt = datetime.now()
     if isinstance(subject_dt, datetime):
@@ -254,33 +274,45 @@ def send_manmail(request):
         try:
             datetime.strptime(subject_dt, '%Y%m%d')
         except ValueError:
-            context.update({'message': _('Invalid date format, should in format `yyyymmdd`.')})
-            return render_to_response('manmail.html', context=context)
-
-    m_sender = request.POST.get('m_sender')
-    save_sender = request.POST.get('save_sender')
-    if not m_sender:
-        m_sender = m_from
-    if m_from == '' and not m_sender:
-        context.update({'message': _('Please input your sender mail address.')})
+            messages.append(_('Invalid date format, should in format `yyyymmdd`.'))
+            # context.update({'message': _('Invalid date format, should in format `yyyymmdd`.')})
+            # return render_to_response('manmail.html', context=context)
+    if messages:
+        context.update({'message': u' | '.join(messages)})
         return render_to_response('manmail.html', context=context)
+
+    if not m_sender:
+        messages.append(_('Please input your sender mail address.'))
+    if not m_name:
+        messages.append(_('Please input your name.'))
+    if messages:
+        context.update({'message': u' | '.join(messages)})
+        return render_to_response('manmail.html', context=context)
+
     m_account, is_created = EmailAccount.objects.get_or_create(user=user)
-    if is_created or (m_account.email != m_sender and save_sender):
+    if is_created:
         m_account.email = m_sender
+        m_account.sign = m_sign
+        m_account.save()
+    else:
+        if m_account.email != m_sender:
+            m_account.email = m_sender
+        if m_account.sign != m_sign:
+            m_account.sign = m_sign
         m_account.save()
     if not m_account.password:
         m_account = PUBLIC_MANMAIL_ACCOUNT
 
-    if user.first_name or user.last_name:
-        username = user.first_name + user.last_name
-    else:
-        username = user.username
+    if m_name != user.first_name + user.last_name:
+        user.first_name = m_name[0]
+        user.last_name = m_name[1:]
+        user.save()
 
     mail_template = MAIL_LIST[m_type]
 
     message = MIMEMultipart()
     message['Subject'] = mail_template[SUBJECT] % {
-        'name': username,
+        'name': m_name,
         'date': subject_dt,
         'period': m_period,
     }
@@ -289,6 +321,8 @@ def send_manmail(request):
     message['Date'] = formatdate(localtime=True)
 
     m_context = request.POST.get('m_context', mail_template[TEXT])
+    m_sign = m_sign.replace('\r\n', '\n').replace('\n', '\n\n')
+    m_context = '\n\n'.join([m_context, m_sign])
     context = MIMEText(markdown(m_context), _subtype='html', _charset='utf-8')
     message.attach(context)
 
