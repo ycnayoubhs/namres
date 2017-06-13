@@ -213,6 +213,8 @@ MAIL_LIST = {
 
 
 MANAGER_ADDRESS = getattr(settings, 'MANAGER_ADDRESS', '')
+FRONTEND_ADDRESS = getattr(settings, 'FRONTEND_ADDRESS', '')
+CFO_ADDRESS = getattr(settings, 'CFO_ADDRESS', '')
 PUBLIC_MANMAIL_ACCOUNT = getattr(settings, 'PUBLIC_MANMAIL_ACCOUNT', None)
 @csrf_exempt
 @login_required
@@ -231,7 +233,15 @@ def send_manmail(request):
             m_sender = ''
             m_sign = ''
 
+        now = datetime.now()
+        ringout_time = datetime(now.year, now.month, now.day, 17, 30)
+        m_period = (now - ringout_time).total_seconds()
+        if m_period < 0: m_period = 0
+        m_period = str(float(int(m_period / 1800)) / 2)
+
         context.update({
+            'm_period': m_period,
+            'm_content': 'KH88888 KH00012',
             'm_receiver': MANAGER_ADDRESS,
             'm_sender': m_sender,
             'm_name': user.first_name + user.last_name,
@@ -310,6 +320,12 @@ def send_manmail(request):
 
     mail_template = MAIL_LIST[m_type]
 
+    to_addrs = [MANAGER_ADDRESS]
+    cc_addrs = [FRONTEND_ADDRESS, m_sender]
+    if m_type == 'dayoff' and float(m_period) >= 24:
+        cc_addrs.append(CFO_ADDRESS)
+    to_addrs += cc_addrs
+
     message = MIMEMultipart()
     message['Subject'] = mail_template[SUBJECT] % {
         'name': m_name,
@@ -318,6 +334,7 @@ def send_manmail(request):
     }
     message['From'] = m_sender
     message['To'] = MANAGER_ADDRESS
+    message['Cc'] = ','.join(cc_addrs)
     message['Date'] = formatdate(localtime=True)
 
     m_context = request.POST.get('m_context', mail_template[TEXT])
@@ -329,7 +346,7 @@ def send_manmail(request):
     try:
         smtp = SMTP(m_account.smtp_server)
         smtp.login(m_account.email, m_account.password)
-        smtp.sendmail(m_account.email, MANAGER_ADDRESS, message.as_string())
+        smtp.sendmail(m_account.email, to_addrs, message.as_string())
     except Exception as ex:
         print ex.message
         HttpResponseBadRequest(
